@@ -4,3 +4,6 @@ langsmith
 langchain[openai]
 dotenv
 langchain-ollama
+ruff
+flake8
+pre-commit

@@ -5,4 +5,6 @@ try:
     print(f"Loaded model: {llm.model}")
 except Exception as e:
     print(f"Error loading model: {e}")
-    raise RuntimeError(f"Failed to load the LLM model. Please check your configuration Ollama and the model name. Original error: {e}")
+    raise RuntimeError(
+        f"Failed to load the LLM model. Please check your configuration Ollama and the model name. Original error: {e}"
+    )

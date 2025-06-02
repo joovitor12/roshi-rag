@@ -9,7 +9,7 @@ repos:
   -   id: check-added-large-files # Prevent committing large files
 
 - repo: https://github.com/PyCQA/flake8
-  rev: '7.1.0'  # Use a specific and stable version of flake8
+  rev: '7.2.0'  # Use a specific and stable version of flake8
   hooks:
   -   id: flake8
     # Optional: if you use a .flake8 config file, you can specify it.
@@ -17,10 +17,8 @@ repos:
     # You can also add other arguments, such as --ignore or --max-line-length
     # if they are not in your .flake8 file
 
-- repo: https://github.com/pre-commit/mirrors-autopep8
-  rev: 'v2.0.4' # Use a specific and stable version of autopep8
-  hooks:
-  -   id: autopep8
-      args: ['--in-place'] # '--aggressive', '--aggressive' # To apply fixes directly
-    # autopep8 needs --in-place to modify the files.
-    # pre-commit will then check if any file was changed.
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    # Encontre a última rev em https://github.com/astral-sh/ruff-pre-commit#usage
+    rev: v0.4.10 # Exemplo, verifique a última
+    hooks:
+    -   id: ruff-format
