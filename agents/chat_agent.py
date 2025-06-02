@@ -1,6 +1,7 @@
 from config.llm_config import llm
 from models.ai_models import State
 
+
 def chatbot_node(state: State):
     """
     Node function for processing chat messages using the LLM.

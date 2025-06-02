@@ -1,0 +1,24 @@
+# .pre-commit-config.yaml
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0  # Use the latest stable version
+  hooks:
+  -   id: trailing-whitespace    # Remove trailing whitespace
+  -   id: end-of-file-fixer      # Ensure files end with a newline
+  -   id: check-yaml             # Check YAML file syntax
+  -   id: check-added-large-files # Prevent committing large files
+
+- repo: https://github.com/PyCQA/flake8
+  rev: '7.2.0'  # Use a specific and stable version of flake8
+  hooks:
+  -   id: flake8
+    # Optional: if you use a .flake8 config file, you can specify it.
+    # args: ['--config=.flake8']
+    # You can also add other arguments, such as --ignore or --max-line-length
+    # if they are not in your .flake8 file
+
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    # Encontre a última rev em https://github.com/astral-sh/ruff-pre-commit#usage
+    rev: v0.4.10 # Exemplo, verifique a última
+    hooks:
+    -   id: ruff-format

@@ -5,6 +5,8 @@ from models.ai_models import ChatResponse, UserRequest
 
 router = APIRouter()
 llm_service = LLMService()
+
+
 @router.post("", response_model=ChatResponse)
 async def chat(request: UserRequest):
     """
