@@ -1,0 +1,26 @@
+# .pre-commit-config.yaml
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0  # Use the latest stable version
+  hooks:
+  -   id: trailing-whitespace    # Remove trailing whitespace
+  -   id: end-of-file-fixer      # Ensure files end with a newline
+  -   id: check-yaml             # Check YAML file syntax
+  -   id: check-added-large-files # Prevent committing large files
+
+- repo: https://github.com/PyCQA/flake8
+  rev: '7.1.0'  # Use a specific and stable version of flake8
+  hooks:
+  -   id: flake8
+    # Optional: if you use a .flake8 config file, you can specify it.
+    # args: ['--config=.flake8']
+    # You can also add other arguments, such as --ignore or --max-line-length
+    # if they are not in your .flake8 file
+
+- repo: https://github.com/pre-commit/mirrors-autopep8
+  rev: 'v2.0.4' # Use a specific and stable version of autopep8
+  hooks:
+  -   id: autopep8
+      args: ['--in-place'] # '--aggressive', '--aggressive' # To apply fixes directly
+    # autopep8 needs --in-place to modify the files.
+    # pre-commit will then check if any file was changed.
