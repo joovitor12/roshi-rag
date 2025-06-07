@@ -6,7 +6,8 @@ RAG agent for Roshi-AI (In progress)
 1.  **Have Python installed (3.13 preferrably)**
 2.  **Install project dependencies:**
     ```bash
-    pip install -r requirements.txt
+    pip install poetry
+    poetry install --no-root
     ```
     This file includes all necessary libraries for the project, including `ruff` for linting/formatting and `pre-commit`.
 3.  **Setup your LLM in `config/llm_config.py`:** This project is currently using an Ollama model. You would need to have the `llama3.2` model and the Ollama CLI (available at [https://ollama.com](https://ollama.com)) installed.
@@ -22,7 +23,7 @@ RAG agent for Roshi-AI (In progress)
     ```
     or with uvicorn:
     ```bash
-    uvicorn main:app --reload
+    poetry run uvicorn main:app --reload
     ```
 
 

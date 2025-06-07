@@ -1,0 +1,24 @@
+[project]
+name = "roshi-rag"
+version = "0.1.0"
+description = "AI Agentic approach project for Roshi AI"
+authors = [
+    {name = "joao machado",email = "joovitm@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard] (>=0.115.12,<0.116.0)",
+    "langgraph (>=0.4.8,<0.5.0)",
+    "langsmith (>=0.3.45,<0.4.0)",
+    "dotenv (>=0.9.9,<0.10.0)",
+    "langchain-ollama (>=0.3.3,<0.4.0)",
+    "ruff (>=0.11.13,<0.12.0)",
+    "flake8 (>=7.2.0,<8.0.0)",
+    "pre-commit (>=4.2.0,<5.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
