@@ -1,4 +1,5 @@
 from langchain_core.messages import HumanMessage
+
 from agents.graph.agents_graph import graph_builder
 from models.ai_models import ChatResponse
 
@@ -11,7 +12,7 @@ class LLMService:
     def __init__(self):
         self.graph = graph_builder.compile()
 
-    async def process_message(self, user_message: str) -> str:
+    async def process_message(self, user_message: str) -> ChatResponse:
         final_state = self.graph.invoke(
             {"messages": [HumanMessage(content=user_message)]}
         )
