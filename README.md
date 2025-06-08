@@ -27,6 +27,16 @@ RAG agent for Roshi-AI (In progress)
     ```
 
 
+## For nerds / who's interested in the project's approach
+
+Hi, i recommend testing the application core by using the test file for streaming, by using the command below:
+
+```
+poetry run python -m test.test_llm_stream
+```
+
+In the future this file will be removed, bc i want to create a front-end application that will integrate with this chatbot, but have fun with this for now.
+
 ## VS Code Configuration (Recommended)
 
 For an optimal development experience with consistent formatting and linting in VS Code:
