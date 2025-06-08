@@ -4,7 +4,7 @@ from langgraph.graph import END, START, StateGraph
 
 from agents.chat_agent import chatbot_node
 from agents.joke_agent import joke_node
-from agents.supervisor_agent import planner_node  # Renamed for clarity
+from agents.supervisor_agent import planner_node
 from agents.synthesizer_agent import synthesizer_node
 from models.ai_models import AgentState
 
