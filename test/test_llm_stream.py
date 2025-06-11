@@ -1,6 +1,5 @@
-# test_llm_stream.py
-
 import asyncio
+import uuid
 
 from services.llm_service import LLMService
 
@@ -8,36 +7,39 @@ dash = 30
 
 
 async def main():
-    """
-    Main function to run an interactive test chat in the terminal
-    that demonstrates streaming functionality.
-    """
-    print("Starting the test chat with the LLM Service...")
-    print("Type 'exit' or 'quit' to end.")
+    print("Starting the test chat with PERSISTENT MEMORY...")
+    print("Type 'exit' or 'quit' to end. Type 'new' to start a new conversation.")
     print("-" * dash)
 
-    # Instantiate our service, which in turn compiles the graph.
     llm_service = LLMService()
+    conversation_id = None  # Starts without a conversation ID
 
     while True:
         try:
-            # Ask for user input.
             user_message = input("You: ")
 
             if user_message.lower() in ["exit", "quit"]:
-                print("Ending the chat. See you soon!")
+                print("👋 Ending the chat. See you soon!")
                 break
 
-            print("AI: ", end="", flush=True)
+            if user_message.lower() == "new":
+                conversation_id = None
+                print("\n🔄 Starting a new conversation.\n")
+                continue
 
-            # Consume the asynchronous generator from the streaming service.
-            async for chunk in llm_service.stream_message(user_message):
-                # Print each piece of the response immediately.
-                # end="" prevents print from adding a newline for each chunk.
-                # flush=True forces immediate printing to the terminal.
+            # If it's the first message in a conversation, generate a new ID
+            if not conversation_id:
+                conversation_id = str(uuid.uuid4())
+                print(f"(New conversation started with ID: {conversation_id[:8]}...)")
+
+            print(f"AI (Conv: {conversation_id[:8]}): ", end="", flush=True)
+
+            # Consume the generator from the service, passing the conversation ID
+            async for chunk in llm_service.stream_message(
+                user_message, conversation_id
+            ):
                 print(chunk, end="", flush=True)
 
-            # Add a newline at the end of the complete AI response.
             print("\n")
 
         except KeyboardInterrupt:
@@ -49,5 +51,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    # Run the async main function.
     asyncio.run(main())

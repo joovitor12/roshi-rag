@@ -1,16 +1,28 @@
+from langchain_core.messages import SystemMessage
+
 from config.llm_config import llm
 from models.ai_models import AgentState
 
 
 def chatbot_node(state: AgentState):
     """
-    Node function for processing chat messages using the LLM.
+    Chat agent node, now with a prompt that instructs it to use memory.
     """
-    print("Worker -> Agent Chat activated")
-    # The LLM is invoked with the message history.
-    # state["messages"] will come as a list of BaseMessage (e.g., HumanMessage, AIMessage).
-    response_message = llm.invoke(state["messages"])
+    print("[WORKER] Chat Agent (with memory) activated.")
 
-    # The node returns a dictionary that updates the state.
-    # 'add_messages' will ensure that this new message is appended to the existing list.
+    # We add a system instruction at the beginning of the conversation
+    # to guide the LLM's behavior in all turns.
+    messages_with_system_prompt = [
+        SystemMessage(
+            content="""You are a helpful conversational assistant.
+        Answer the user's last question based on the conversation history.
+        If you don't know the answer, say you don't know. Do not make up information.
+        Use the history to remember details about the user, such as name or other information they provide."""
+        )
+    ]
+    messages_with_system_prompt.extend(state["messages"])
+
+    response_message = llm.invoke(messages_with_system_prompt)
+
+    # Returns the response content to the results list
     return {"results": [response_message.content]}

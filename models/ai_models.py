@@ -1,5 +1,5 @@
 import operator
-from typing import Annotated, List
+from typing import Annotated, List, Optional
 
 from langchain_core.messages import BaseMessage
 from langgraph.graph.message import add_messages
@@ -24,6 +24,7 @@ class AgentState(TypedDict):
 
 class UserRequest(BaseModel):
     message: str
+    conversation_id: Optional[str] = None
 
 
 class ChatResponse(BaseModel):
