@@ -3,12 +3,12 @@ from langchain_core.messages import AIMessage, HumanMessage
 from models.ai_models import AgentState
 
 
-def synthesizer_node(state: AgentState):
+async def synthesizer_node(state: AgentState):
     """
     Node that creates a high-quality final prompt for the LLM,
     using the conversation history and the worker's suggestion.
     """
-    print("🤝 [AGENT] Entering synthesizer with context...")
+    print("🤝 [AGENT] Synthesizer agent activated with context...")
 
     # Format the conversation history to include in the prompt
     history_str = ""
@@ -35,7 +35,7 @@ Analyze the conversation history and the response suggestion from your internal 
 ### YOUR FINAL RESPONSE (reply directly to the user):
 """
 
-    print("✨ [AGENT] Final, contextualized prompt generated.")
+    print("✨ [AGENT] Final contextualized prompt generated.")
 
     # Put the final prompt back in the 'results' field for the LLMService to use.
     return {"results": [final_prompt]}

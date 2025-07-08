@@ -1,7 +1,12 @@
 import asyncio
 import uuid
+import sys
 
 from services.llm_service import LLMService
+
+# Fix for Windows asyncio event loop compatibility with Psycopg
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 dash = 30
 

@@ -38,11 +38,11 @@ def create_planner_node():
     )
     planner = prompt | structured_llm
 
-    def planner_node(state: AgentState):
-        print(f"Entered Supervisor | Planner agent with state: {state}")
+    async def planner_node(state: AgentState):
+        print(f"[SUPERVISOR] Planner agent entered with state: {state}")
         last_message = state["messages"][-1].content
-        plan = planner.invoke({"message": last_message})
-        print(f"Generated plan: {plan.tasks}")
+        plan = await planner.ainvoke({"message": last_message})
+        print(f"[SUPERVISOR] Generated plan: {plan.tasks}")
         return {"tasks": plan.tasks}
 
     return planner_node

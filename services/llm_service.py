@@ -12,22 +12,70 @@ class LLMService:
     Service for processing user messages using a state graph.
     """
 
-    def __init__(self):
-        conn_string = (
-            "postgresql+asyncpg://postgres:1234@localhost:5432/roshi_rag_memory"
-        )
-        self.memory = AsyncPostgresSaver.from_conn_string(conn_string)
-        self.graph = graph_builder.compile(checkpointer=self.memory)
+    def __init__(self, use_postgres=False):
+        """
+        Initialize LLM Service with memory support
+
+        Args:
+            use_postgres: If True, uses PostgreSQL for persistent memory.
+                         If False, uses in-memory storage (default for testing).
+        """
+        self.use_postgres = use_postgres
+        self.memory = None
+        self.graph = None
+        self._conn_string = "postgresql://postgres:1234@localhost:5432/roshi_rag_memory"
+        self._memory_context = None
+
+        if not use_postgres:
+            # Use in-memory storage for testing
+            from langgraph.checkpoint.memory import MemorySaver
+
+            self.memory = MemorySaver()
+            self.graph = graph_builder.compile(checkpointer=self.memory)
+
+    async def _initialize_memory(self):
+        """Initialize PostgreSQL memory if needed"""
+        if self.use_postgres and self.memory is None:
+            try:
+                # Use the context manager correctly for PostgreSQL
+                self._memory_context = AsyncPostgresSaver.from_conn_string(
+                    self._conn_string
+                )
+                self.memory = await self._memory_context.__aenter__()
+                self.graph = graph_builder.compile(checkpointer=self.memory)
+                print("✅ PostgreSQL memory initialized successfully")
+            except Exception as e:
+                print(f"❌ Failed to initialize PostgreSQL memory: {e}")
+                print("🔄 Falling back to in-memory storage")
+                from langgraph.checkpoint.memory import MemorySaver
+
+                self.memory = MemorySaver()
+                self.graph = graph_builder.compile(checkpointer=self.memory)
+                self.use_postgres = False
+
+    async def close(self):
+        """Close the memory context manager if using PostgreSQL"""
+        if self._memory_context is not None:
+            await self._memory_context.__aexit__(None, None, None)
+            self.memory = None
+            self.graph = None
+            self._memory_context = None
 
     async def stream_message(
         self, user_message: str, conversation_id: str
     ) -> AsyncGenerator[str, None]:
+        # Initialize memory if not already done
+        await self._initialize_memory()
+
         config = {"configurable": {"thread_id": conversation_id}}
 
         # --- EXPLICIT AND CORRECTED STATE LOGIC ---
 
         # 1. Actively fetches the most recent conversation state from the database.
-        thread_state = await self.graph.get_state(config)
+        if self.use_postgres:
+            thread_state = await self.graph.aget_state(config)
+        else:
+            thread_state = self.graph.get_state(config)
 
         # 2. Extracts the message history. If it's a new conversation, starts with an empty list.
         messages_history = (
@@ -46,7 +94,7 @@ class LLMService:
             {"messages": messages_history, "results": []}, config=config
         )
 
-        # --- THE REST OF THE FUNCTION REMAINS THE SAME ---
+        # --- PROCESSING COMPLETE ---
 
         final_prompt = final_state.get("results", [])[-1]
 
@@ -58,5 +106,5 @@ class LLMService:
 
         print(f"🚀 [SERVICE] Starting streaming for conversation {conversation_id}.")
 
-        async for chunk in llm.astream(final_prompt, config=config):
+        async for chunk in llm.astream(final_prompt):
             yield chunk.content

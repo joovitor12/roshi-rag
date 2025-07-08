@@ -4,11 +4,11 @@ from config.llm_config import llm
 from models.ai_models import AgentState
 
 
-def chatbot_node(state: AgentState):
+async def chatbot_node(state: AgentState):
     """
     Chat agent node, now with a prompt that instructs it to use memory.
     """
-    print("[WORKER] Chat Agent (with memory) activated.")
+    print("[AGENT] Chat Agent (with memory) activated.")
 
     # We add a system instruction at the beginning of the conversation
     # to guide the LLM's behavior in all turns.
@@ -22,7 +22,7 @@ def chatbot_node(state: AgentState):
     ]
     messages_with_system_prompt.extend(state["messages"])
 
-    response_message = llm.invoke(messages_with_system_prompt)
+    response_message = await llm.ainvoke(messages_with_system_prompt)
 
     # Returns the response content to the results list
     return {"results": [response_message.content]}

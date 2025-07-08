@@ -8,7 +8,8 @@ from models.ai_models import UserRequest
 from services.llm_service import LLMService
 
 router = APIRouter()
-llm_service = LLMService()
+# Use PostgreSQL for persistent memory in production
+llm_service = LLMService(use_postgres=True)
 
 
 @router.post("")
