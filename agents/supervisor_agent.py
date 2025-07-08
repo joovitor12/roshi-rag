@@ -2,7 +2,7 @@
 from typing import List
 
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 
 from config.llm_config import llm
 from models.ai_models import AgentState
@@ -38,11 +38,11 @@ def create_planner_node():
     )
     planner = prompt | structured_llm
 
-    def planner_node(state: AgentState):
-        print(f"Entered Supervisor | Planner agent with state: {state}")
+    async def planner_node(state: AgentState):
+        print(f"[SUPERVISOR] Planner agent entered with state: {state}")
         last_message = state["messages"][-1].content
-        plan = planner.invoke({"message": last_message})
-        print(f"Generated plan: {plan.tasks}")
+        plan = await planner.ainvoke({"message": last_message})
+        print(f"[SUPERVISOR] Generated plan: {plan.tasks}")
         return {"tasks": plan.tasks}
 
     return planner_node

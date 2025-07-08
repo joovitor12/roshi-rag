@@ -1,4 +1,5 @@
 import json
+import uuid
 
 from fastapi import APIRouter
 from starlette.responses import StreamingResponse
@@ -7,7 +8,8 @@ from models.ai_models import UserRequest
 from services.llm_service import LLMService
 
 router = APIRouter()
-llm_service = LLMService()
+# Use PostgreSQL for persistent memory in production
+llm_service = LLMService(use_postgres=True)
 
 
 @router.post("")
@@ -17,13 +19,14 @@ async def chat(request: UserRequest):
     """
 
     async def stream_generator():
-        """Internal generator that consumes from the service and formats for SSE."""
-        async for chunk in llm_service.stream_message(request.message):
+        conversation_id = request.conversation_id or str(uuid.uuid4())
+
+        id_payload = {"conversation_id": conversation_id}
+        yield f"event: metadata\ndata: {json.dumps(id_payload)}\n\n"
+
+        async for chunk in llm_service.stream_message(request.message, conversation_id):
             if chunk:
-                # Server-Sent Event (SSE) format
-                # The client will receive each chunk as a "message" event
                 response_chunk = {"response": chunk}
                 yield f"data: {json.dumps(response_chunk)}\n\n"
 
-    # Returns a StreamingResponse that consumes from our generator
     return StreamingResponse(stream_generator(), media_type="text/event-stream")

@@ -1,37 +1,41 @@
-# agents/synthesizer_agent.py
-from langchain_core.messages import BaseMessage
+from langchain_core.messages import AIMessage, HumanMessage
 
 from models.ai_models import AgentState
 
 
-def synthesizer_node(state: AgentState):
+async def synthesizer_node(state: AgentState):
     """
-    Node that synthesizes the results from the workers into a SINGLE final prompt.
-    It NO LONGER calls the LLM.
+    Node that creates a high-quality final prompt for the LLM,
+    using the conversation history and the worker's suggestion.
     """
-    print("[AGENT] Entering the synthesizer...")
-    print(f"[AGENT] Results received from workers: {state['results']}")
+    print("🤝 [AGENT] Synthesizer agent activated with context...")
 
-    final_response_parts = [
-        item.content if isinstance(item, BaseMessage) else str(item)
-        for item in state["results"]
-    ]
+    # Format the conversation history to include in the prompt
+    history_str = ""
+    for msg in state["messages"]:
+        if isinstance(msg, HumanMessage):
+            history_str += f"User: {msg.content}\n"
+        elif isinstance(msg, AIMessage):
+            history_str += f"Assistant: {msg.content}\n"
 
-    context_for_synthesis = "\n".join(final_response_parts)
+    # Get the raw response from the worker
+    worker_output = "\n".join(state.get("results", []))
 
-    # Builds the final prompt that will be used for streaming
-    synthesis_prompt = f"""
+    # Create the final, detailed prompt
+    final_prompt = f"""You are a conversational AI assistant named Roshi. Your tone is helpful and friendly.
+Your task is to formulate the final response for the user.
 
-    You are a helpful assistant. Combine the following information into a cohesive and useful response for the user.
+Analyze the conversation history and the response suggestion from your internal agent to give a final, polished answer that maintains context.
 
-    Information to combine:
-    ---
-    {context_for_synthesis}
-    ---
-    Your final answer:
-    """
-    print("✨ [AGENT] Final prompt generated for streaming.")
+### CONVERSATION HISTORY:
+{history_str}
+### INTERNAL AGENT RESPONSE SUGGESTION:
+{worker_output}
 
-    # Overwrites 'results' with a single item: the final prompt.
-    # We will use this in our service.
-    return {"results": [synthesis_prompt]}
+### YOUR FINAL RESPONSE (reply directly to the user):
+"""
+
+    print("✨ [AGENT] Final contextualized prompt generated.")
+
+    # Put the final prompt back in the 'results' field for the LLMService to use.
+    return {"results": [final_prompt]}
