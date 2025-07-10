@@ -42,6 +42,10 @@ class LLMService:
                     self._conn_string
                 )
                 self.memory = await self._memory_context.__aenter__()
+
+                # Create the necessary tables automatically
+                await self.memory.setup()
+
                 self.graph = graph_builder.compile(checkpointer=self.memory)
                 print("✅ PostgreSQL memory initialized successfully")
             except Exception as e:
