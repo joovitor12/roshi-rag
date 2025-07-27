@@ -1,7 +1,7 @@
 # .pre-commit-config.yaml
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v5.0.0  # Use the latest stable version
+  rev: v4.4.0  # Use a stable version
   hooks:
   -   id: trailing-whitespace    # Remove trailing whitespace
   -   id: end-of-file-fixer      # Ensure files end with a newline
@@ -18,7 +18,7 @@ repos:
     # if they are not in your .flake8 file
 
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    # Encontre a última rev em https://github.com/astral-sh/ruff-pre-commit#usage
-    rev: v0.4.10 # Exemplo, verifique a última
+    rev: v0.1.6
     hooks:
+    -   id: ruff
     -   id: ruff-format
